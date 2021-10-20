@@ -32,11 +32,11 @@ class Header extends React.Component {
       return (
         <header data-testid="header-component">
           <h3 data-testid="header-user-name">{ name }</h3>
-          <Link data-testid="link-to-search" to="/search">Search</Link>
+          <Link data-testid="link-to-search" to="/search">Pesquisa</Link>
           <br />
-          <Link data-testid="link-to-favorites" to="/favorites">Favorites</Link>
+          <Link data-testid="link-to-favorites" to="/favorites">Favoritos</Link>
           <br />
-          <Link data-testid="link-to-profile" to="/profile">Profile</Link>
+          <Link data-testid="link-to-profile" to="/profile">Perfil</Link>
         </header>
       );
     }
