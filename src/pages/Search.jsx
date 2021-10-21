@@ -18,6 +18,10 @@ class Search extends React.Component {
     this.albumRequest = this.albumRequest.bind(this);
   }
 
+  componentDidMount() {
+    this.albumRequest();
+  }
+
   handleInputValue({ target }) {
     this.setState({ inputValue: target.value });
   }
