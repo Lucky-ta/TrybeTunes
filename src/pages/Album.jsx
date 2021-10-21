@@ -30,7 +30,7 @@ class Album extends React.Component {
       <div data-testid="page-album">
         <Header />
         {musics.length && (
-          <div key={ musics[0].collectionId }>
+          <div key={ musics[0].amgArtistId }>
             <p data-testid="artist-name">{`Nome do artista: ${musics[0].artistName} `}</p>
             <p
               data-testid="album-name"
@@ -39,7 +39,7 @@ class Album extends React.Component {
             </p>
             {musics.slice(1).map((musica) => (
               <MusicCard
-                key={ musica.collectionId }
+                key={ musica.trackId }
                 trackName={ musica.trackName }
                 previewUrl={ musica.previewUrl }
               />
