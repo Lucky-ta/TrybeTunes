@@ -1,81 +1,77 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
-import LoadingText from '../components/LoadingText';
+import Loading from '../components/Loading';
 import searchAlbumsAPI from '../services/searchAlbumsAPI';
+
+const minChar = 2;
 
 class Search extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      inputValue: '',
+      InputValue: '',
       fixedInputValue: '',
+      loading: false,
       albums: [],
-      loadingText: false,
     };
-    this.handleInputValue = this.handleInputValue.bind(this);
-    this.albumRequest = this.albumRequest.bind(this);
+    this.handlerInputValue = this.handlerInputValue.bind(this);
+    this.requestAlbumApi = this.requestAlbumApi.bind(this);
   }
 
-  componentDidMount() {
-    this.albumRequest();
+  handlerInputValue({ target }) {
+    this.setState({ InputValue: target.value });
   }
 
-  handleInputValue({ target }) {
-    this.setState({ inputValue: target.value });
-  }
-
-  async albumRequest() {
-    const { inputValue } = this.state;
-    this.setState({ loadingText: true });
-    this.setState({ albums: await searchAlbumsAPI(inputValue) });
-    this.setState({ loadingText: false });
-    this.setState({ fixedInputValue: inputValue });
-    this.setState({ inputValue: '' });
+  async requestAlbumApi() {
+    const { InputValue } = this.state;
+    this.setState({ loading: true, fixedInputValue: InputValue });
+    const albumRequest = await searchAlbumsAPI(InputValue);
+    this.setState({ InputValue: '', loading: false, albums: albumRequest });
   }
 
   render() {
-    const minCharaters = 2;
-    const { inputValue, albums, loadingText, fixedInputValue } = this.state;
-
+    const { InputValue, loading, fixedInputValue, albums } = this.state;
     return (
       <div data-testid="page-search">
         <Header />
         <form action="search-musics">
           <input
-            value={ inputValue }
-            onChange={ this.handleInputValue }
-            data-testid="search-artist-input"
+            value={ InputValue }
             type="text"
-            hidden={ loadingText }
+            data-testid="search-artist-input"
+            onChange={ this.handlerInputValue }
+            hidden={ loading }
           />
           <button
-            disabled={ inputValue.length < minCharaters }
-            data-testid="search-artist-button"
             type="button"
-            onClick={ this.albumRequest }
-            hidden={ loadingText }
+            data-testid="search-artist-button"
+            disabled={ InputValue.length < minChar }
+            onClick={ this.requestAlbumApi }
+            hidden={ loading }
           >
             Pesquisar
           </button>
-          <br />
-          {loadingText && <LoadingText />}
+          {loading && <Loading />}
+          {fixedInputValue.length > albums.length && 'Nenhum álbum foi encontrado'}
           {albums.length !== 0 && `Resultado de álbuns de: ${fixedInputValue}`}
+          <br />
           {albums.map((album) => (
             <div key={ album.collectionId }>
-              <img src={ album.artworkUrl100 } alt="" />
-              <h4>{ album.collectionName }</h4>
-              <h5>{ `Price: ${album.collectionPrice}` }</h5>
+              <h4>{ album.artistName }</h4>
+              <img src={ album.artworkUrl100 } alt="Imagem do album" />
+              <p>{ album.collectionName }</p>
+              <h4>{ album.collectionPrice }</h4>
               <Link
                 data-testid={ `link-to-album-${album.collectionId}` }
                 to={ `/album/${album.collectionId}` }
               >
-                Ir para Album
+                Ir para o album
               </Link>
             </div>
           ))}
-          {fixedInputValue.length !== albums.length && 'Nenhum álbum foi encontrado'}
+          <br />
         </form>
       </div>
     );

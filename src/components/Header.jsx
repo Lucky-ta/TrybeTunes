@@ -1,45 +1,44 @@
 import React from 'react';
+import { Route } from 'react-router';
 import { Link } from 'react-router-dom';
 import { getUser } from '../services/userAPI';
-import LoadingText from './LoadingText';
+import Loading from './Loading';
 
 class Header extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      loadingText: false,
       userName: '',
+      accept: false,
     };
-    this.handleGetUser = this.handleGetUser.bind(this);
+    this.userRequest = this.userRequest.bind(this);
   }
 
   componentDidMount() {
-    this.handleGetUser();
+    this.userRequest();
   }
 
-  async handleGetUser() {
-    this.setState({ loadingText: true });
-    this.setState({ userName: await getUser() });
-    this.setState({ loadingText: false });
+  async userRequest() {
+    const getUserRequest = await getUser();
+    this.setState({ userName: getUserRequest.name, accept: true });
   }
 
   render() {
-    const { loadingText, userName } = this.state;
-    const { name } = userName;
-    if (loadingText) return <LoadingText />;
-    if (loadingText === false) {
-      return (
-        <header data-testid="header-component">
-          <h3 data-testid="header-user-name">{ name }</h3>
-          <Link data-testid="link-to-search" to="/search">Pesquisa</Link>
+    const { userName, accept } = this.state;
+    return (
+      <header data-testid="header-component">
+        {userName.length === 0 && <Loading /> }
+        {accept && <h3 data-testid="header-user-name">{ userName }</h3>}
+        <Route>
+          <Link to="/search" data-testid="link-to-search">Pesquisar</Link>
           <br />
-          <Link data-testid="link-to-favorites" to="/favorites">Favoritos</Link>
+          <Link to="/favorites" data-testid="link-to-favorites">Favoritos</Link>
           <br />
-          <Link data-testid="link-to-profile" to="/profile">Perfil</Link>
-        </header>
-      );
-    }
+          <Link to="/profile" data-testid="link-to-profile">Perfil</Link>
+        </Route>
+      </header>
+    );
   }
 }
 

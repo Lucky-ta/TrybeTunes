@@ -1,57 +1,55 @@
 import React from 'react';
 import { Redirect } from 'react-router';
+import Loading from '../components/Loading';
 import { createUser } from '../services/userAPI';
-import LoadingText from '../components/LoadingText';
+
+const minChar = 3;
 
 class Login extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      buttonState: true,
-      userName: '',
-      loadingText: false,
+      inputValue: '',
+      loading: false,
       accept: false,
     };
-    this.saveName = this.saveName.bind(this);
+    this.handlerInput = this.handlerInput.bind(this);
+    this.requestApi = this.requestApi.bind(this);
   }
 
-  enableButton = ({ target }) => {
-    const minInputChar = 3;
-    return (
-      target.value.length >= minInputChar
-        ? this.setState({ buttonState: false },
-          () => this.setState({ userName: target.value }))
-        : this.setState({ buttonState: true })
-    );
+  componentDidMount() {
+    return this.requestApi;
   }
 
-  async saveName() {
-    const { userName } = this.state;
-    this.setState({ loadingText: true });
-    await createUser({ name: userName });
-    this.setState({ loadingText: false, accept: true });
+  handlerInput({ target }) {
+    this.setState({ inputValue: target.value });
+  }
+
+  async requestApi() {
+    const { inputValue } = this.state;
+    this.setState({ loading: true });
+    await createUser({ name: inputValue });
+    this.setState({ loading: false, accept: true });
   }
 
   render() {
-    const { buttonState, loadingText, accept } = this.state;
-    if (loadingText) return <LoadingText />;
+    const { inputValue, loading, accept } = this.state;
+    if (loading) return <Loading />;
     if (accept) return <Redirect to="/search" />;
     return (
       <div data-testid="page-login">
-        <form action="signUp">
+        <form action="Login">
           <input
-            onChange={ this.enableButton }
-            type="text"
-            name="User-Name"
-            id="login-name-input"
             data-testid="login-name-input"
+            type="text"
+            onChange={ this.handlerInput }
           />
           <button
-            onClick={ this.saveName }
-            disabled={ buttonState }
-            type="button"
             data-testid="login-submit-button"
+            type="button"
+            disabled={ inputValue.length < minChar }
+            onClick={ this.requestApi }
           >
             Entrar
           </button>

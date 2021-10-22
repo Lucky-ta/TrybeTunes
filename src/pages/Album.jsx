@@ -21,28 +21,31 @@ class Album extends React.Component {
   async musicsRequest() {
     const { match } = this.props;
     const { id } = match.params;
-    this.setState({ musics: await getMusics(id) });
+    const requestFromApi = await getMusics(id);
+    this.setState({ musics: requestFromApi });
   }
 
   render() {
     const { musics } = this.state;
+    console.log(musics);
     return (
       <div data-testid="page-album">
         <Header />
-        {musics.length && (
-          <div key={ musics[0].amgArtistId }>
-            <p data-testid="artist-name">{`Nome do artista: ${musics[0].artistName} `}</p>
-            <p
-              data-testid="album-name"
-            >
-              { `Nome da coleção: ${musics[0].collectionName}` }
-            </p>
-            {musics.slice(1).map((musica) => (
-              <MusicCard
-                key={ musica.trackId }
-                trackName={ musica.trackName }
-                previewUrl={ musica.previewUrl }
-              />
+        {musics.length !== 0 && (
+          <div>
+            <div>
+              <h3 data-testid="artist-name">{ musics[0].artistName }</h3>
+              <h4 data-testid="album-name">{ musics[0].collectionName }</h4>
+            </div>
+            {musics.slice(1).map((music) => (
+              <ol key={ music.trackId }>
+                <li>
+                  <MusicCard
+                    trackName={ music.trackName }
+                    previewUrl={ music.previewUrl }
+                  />
+                </li>
+              </ol>
             ))}
           </div>
         )}
