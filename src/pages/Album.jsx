@@ -25,7 +25,7 @@ class Album extends React.Component {
 
   isFavorite = (trackId) => {
     const { favoritesSongs } = this.state;
-    const favorite = favoritesSongs.find((track) => track.trackId === trackId);
+    const favorite = favoritesSongs.some((track) => track.trackId === trackId);
     if (favorite) return true;
     return false;
   }
@@ -39,6 +39,8 @@ class Album extends React.Component {
   async addSongOnClick(track) {
     this.setState({ loading: true });
     addSong(track)
+    // Crédito: Bruno Bartolomeu para este loading
+    // - link do commit: https://github.com/tryber/sd-015-b-project-trybetunes/pull/40/commits/c7cd2b6a4c1ffe9cf788d2e8bdeaaeec87746126
       .then(() => this.setState((prevState) => ({
         loading: false,
         favoritesSongs: [...prevState.favoritesSongs, track],
