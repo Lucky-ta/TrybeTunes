@@ -2,22 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 class MusicCard extends React.Component {
-  constructor() {
-    super();
-
-    this.state = {
-      check: false,
-    };
-    this.isChecked = this.isChecked.bind(this);
-  }
-
-  isChecked({ target }) {
-    this.setState({ check: target.checked });
-  }
-
   render() {
-    const { trackName, previewUrl, trackId, addSongOnClick } = this.props;
-    const { check } = this.state;
+    const { trackName, previewUrl, trackId, addSongOnClick, isFavorite } = this.props;
     return (
       <div>
         <h3>{ trackName }</h3>
@@ -33,8 +19,8 @@ class MusicCard extends React.Component {
             type="checkbox"
             id={ trackId }
             onChange={ this.isChecked }
-            onClick={ () => addSongOnClick({ trackName, previewUrl, trackId }, check) }
-            checked={ check }
+            onClick={ () => addSongOnClick({ trackName, previewUrl, trackId }) }
+            checked={ isFavorite(trackId) }
           />
           Favorita
         </label>

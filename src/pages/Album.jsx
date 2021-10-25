@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
 import MusicCard from '../components/MusicCard';
-import { addSong, removeSong } from '../services/favoriteSongsAPI';
+import { addSong } from '../services/favoriteSongsAPI';
 import Loading from '../components/Loading';
 
 class Album extends React.Component {
@@ -13,6 +13,7 @@ class Album extends React.Component {
     this.state = {
       musics: [],
       loading: false,
+      favoritesSongs: [],
     };
     this.musicsRequest = this.musicsRequest.bind(this);
     this.addSongOnClick = this.addSongOnClick.bind(this);
@@ -22,17 +23,26 @@ class Album extends React.Component {
     this.musicsRequest();
   }
 
+  isFavorite = (trackId) => {
+    const { favoritesSongs } = this.state;
+    const favorite = favoritesSongs.find((track) => track.trackId === trackId);
+    if (favorite) return true;
+    return false;
+  }
+
   async musicsRequest() {
     const { match } = this.props;
     const { id } = match.params;
     this.setState({ musics: await getMusics(id) });
   }
 
-  async addSongOnClick(song, target) {
+  async addSongOnClick(track) {
     this.setState({ loading: true });
-    if (!target) await addSong(song);
-    this.setState({ loading: false });
-    if (target) await removeSong(song);
+    addSong(track)
+      .then(() => this.setState((prevState) => ({
+        loading: false,
+        favoritesSongs: [...prevState.favoritesSongs, track],
+      })));
   }
 
   render() {
@@ -56,6 +66,7 @@ class Album extends React.Component {
                 previewUrl={ musica.previewUrl }
                 trackId={ musica.trackId }
                 addSongOnClick={ this.addSongOnClick }
+                isFavorite={ this.isFavorite }
               />
             ))}
           </div>
