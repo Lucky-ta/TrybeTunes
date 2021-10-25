@@ -40,7 +40,7 @@ class Album extends React.Component {
     this.setState({ loading: true });
     addSong(track)
     // Crédito: Bruno Bartolomeu para este loading
-    // - link do commit: https://github.com/tryber/sd-015-b-project-trybetunes/pull/40/commits/c7cd2b6a4c1ffe9cf788d2e8bdeaaeec87746126
+    // - link do commit: https://github.com/tryber/sd-015-b-project-trybetunes/pull/40/commits/b937e0a54a68ec93c3e12effaeb2e04aa7a11d2c
       .then(() => this.setState((prevState) => ({
         loading: false,
         favoritesSongs: [...prevState.favoritesSongs, track],
