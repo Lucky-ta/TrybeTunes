@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
 import MusicCard from '../components/MusicCard';
-import { getFavoriteSongs, addSong } from '../services/favoriteSongsAPI';
+import { addSong, removeSong } from '../services/favoriteSongsAPI';
+import Loading from '../components/Loading';
 
 class Album extends React.Component {
   constructor() {
@@ -11,64 +12,51 @@ class Album extends React.Component {
 
     this.state = {
       musics: [],
-      favoritesSongs: [],
+      loading: false,
     };
     this.musicsRequest = this.musicsRequest.bind(this);
-    this.handlerChecked = this.handlerChecked.bind(this);
-    this.favoriteSongRequest = this.favoriteSongRequest.bind(this);
-    this.isFvorites = this.isFvorites.bind(this);
+    this.addSongOnClick = this.addSongOnClick.bind(this);
   }
 
   componentDidMount() {
     this.musicsRequest();
-    this.favoriteSongRequest();
-  }
-
-  async handlerChecked(musics) {
-    await addSong(musics);
   }
 
   async musicsRequest() {
     const { match } = this.props;
     const { id } = match.params;
-    const requestFromApi = await getMusics(id);
-    this.setState({ musics: requestFromApi });
+    this.setState({ musics: await getMusics(id) });
   }
 
-  async favoriteSongRequest() {
-    const favoritesSongs = await getFavoriteSongs();
-    this.setState({ favoritesSongs });
-  }
-
-  isFvorites(song) {
-    const { favoritesSongs } = this.state;
-    return favoritesSongs.some((track) => track.trackId === song);
+  async addSongOnClick(song, target) {
+    this.setState({ loading: true });
+    if (!target) await addSong(song);
+    this.setState({ loading: false });
+    if (target) await removeSong(song);
   }
 
   render() {
-    const { musics } = this.state;
+    const { musics, loading } = this.state;
     return (
       <div data-testid="page-album">
+        { loading && <Loading /> }
         <Header />
-        {musics.length !== 0 && (
-          <div>
-            <div>
-              <h3 data-testid="artist-name">{ musics[0].artistName }</h3>
-              <h4 data-testid="album-name">{ musics[0].collectionName }</h4>
-            </div>
-            {musics.slice(1).map((music) => (
-              <ol key={ music.trackId }>
-                <li>
-                  <MusicCard
-                    trackName={ music.trackName }
-                    previewUrl={ music.previewUrl }
-                    trackId={ music.trackId }
-                    musics={ music }
-                    handlerChecked={ this.handlerChecked }
-                    isFvorites={ this.isFvorites }
-                  />
-                </li>
-              </ol>
+        {musics.length && (
+          <div key={ musics[0].amgArtistId }>
+            <p data-testid="artist-name">{`Nome do artista: ${musics[0].artistName} `}</p>
+            <p
+              data-testid="album-name"
+            >
+              { `Nome da coleção: ${musics[0].collectionName}` }
+            </p>
+            {musics.slice(1).map((musica) => (
+              <MusicCard
+                key={ musica.trackId }
+                trackName={ musica.trackName }
+                previewUrl={ musica.previewUrl }
+                trackId={ musica.trackId }
+                addSongOnClick={ this.addSongOnClick }
+              />
             ))}
           </div>
         )}
