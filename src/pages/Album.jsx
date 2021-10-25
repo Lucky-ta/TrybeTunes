@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
 import MusicCard from '../components/MusicCard';
+import { getFavoriteSongs, addSong } from '../services/favoriteSongsAPI';
 
 class Album extends React.Component {
   constructor() {
@@ -10,12 +11,21 @@ class Album extends React.Component {
 
     this.state = {
       musics: [],
+      favoritesSongs: [],
     };
     this.musicsRequest = this.musicsRequest.bind(this);
+    this.handlerChecked = this.handlerChecked.bind(this);
+    this.favoriteSongRequest = this.favoriteSongRequest.bind(this);
+    this.isFvorites = this.isFvorites.bind(this);
   }
 
   componentDidMount() {
     this.musicsRequest();
+    this.favoriteSongRequest();
+  }
+
+  async handlerChecked(musics) {
+    await addSong(musics);
   }
 
   async musicsRequest() {
@@ -23,6 +33,16 @@ class Album extends React.Component {
     const { id } = match.params;
     const requestFromApi = await getMusics(id);
     this.setState({ musics: requestFromApi });
+  }
+
+  async favoriteSongRequest() {
+    const favoritesSongs = await getFavoriteSongs();
+    this.setState({ favoritesSongs });
+  }
+
+  isFvorites(song) {
+    const { favoritesSongs } = this.state;
+    return favoritesSongs.some((track) => track.trackId === song);
   }
 
   render() {
@@ -43,6 +63,9 @@ class Album extends React.Component {
                     trackName={ music.trackName }
                     previewUrl={ music.previewUrl }
                     trackId={ music.trackId }
+                    musics={ music }
+                    handlerChecked={ this.handlerChecked }
+                    isFvorites={ this.isFvorites }
                   />
                 </li>
               </ol>
