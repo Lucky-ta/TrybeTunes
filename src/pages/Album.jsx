@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
 import MusicCard from '../components/MusicCard';
-import { addSong } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 import Loading from '../components/Loading';
 
 class Album extends React.Component {
@@ -30,10 +30,15 @@ class Album extends React.Component {
     return false;
   }
 
-  async musicsRequest() {
-    const { match } = this.props;
-    const { id } = match.params;
-    this.setState({ musics: await getMusics(id) });
+  // Créditos: Bruno Bartolomeu por me ajudar a entender esta logica de adicionar aos favoritos
+  // link do commit: https://github.com/tryber/sd-015-b-project-trybetunes/pull/40/commits/c7cd2b6a4c1ffe9cf788d2e8bdeaaeec87746126
+  addFavorites = () => {
+    this.setState({ loading: true });
+    getFavoriteSongs()
+      .then((favorites) => this.setState({
+        loading: false,
+        favoritesSongs: favorites,
+      }));
   }
 
   async addSongOnClick(track) {
@@ -45,6 +50,13 @@ class Album extends React.Component {
         loading: false,
         favoritesSongs: [...prevState.favoritesSongs, track],
       })));
+  }
+
+  async musicsRequest() {
+    const { match } = this.props;
+    const { id } = match.params;
+    this.setState({ musics: await getMusics(id) });
+    this.addFavorites();
   }
 
   render() {
