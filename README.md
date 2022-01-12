@@ -1,4 +1,4 @@
-# TrybTunes
+# TrybeTunes
 
 ## _Descrição:_
   Este é um App musicas, onde você começa digitando seu nome e clicando em entrar,
@@ -19,3 +19,4 @@ npm install
 npm start
 ```
 ou entre no link abaixo para visualizar o projeto funcionando:
+https://trybe-tunes-h52fkld5m-lucky-ta.vercel.app/
