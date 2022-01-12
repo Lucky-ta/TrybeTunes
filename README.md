@@ -19,4 +19,4 @@ npm install
 npm start
 ```
 ou entre no link abaixo para visualizar o projeto funcionando:
-https://trybe-tunes-h52fkld5m-lucky-ta.vercel.app/
+https://trybe-tunes-rouge.vercel.app/
