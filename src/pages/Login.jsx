@@ -44,6 +44,7 @@ class Login extends React.Component {
             data-testid="login-name-input"
             type="text"
             onChange={ this.handlerInput }
+            placeholder="Digite seu nome aqui"
           />
           <button
             data-testid="login-submit-button"
